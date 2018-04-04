@@ -248,7 +248,7 @@ properties([[$class: 'BuildDiscarderProperty',
         timeout(time: 25, unit: 'MINUTES')
     }
 
-}
+
 def developmentArtifactVersion = ''
 def releasedVersion = ''
 // get change log to be send over the mail
