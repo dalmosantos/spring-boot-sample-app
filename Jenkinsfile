@@ -1,7 +1,15 @@
-pipeline {
-    // run on jenkins nodes tha has java 8 label
-    //agent { label 'java8' }
-    // global env variables
+import hudson.model.*
+import hudson.FilePath
+import hudson.EnvVars
+import groovy.json.JsonSlurperClassic
+import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
+import java.net.URL
+
+properties([[$class: 'BuildDiscarderProperty',
+                strategy: [$class: 'LogRotator', numToKeepStr: '4']],
+                pipelineTriggers([[$class:"SCMTrigger", scmpoll_spec:"H/10 * * * *"]]),
+])
     environment {
         EMAIL_RECIPIENTS = 'dalmo.santos@verity.com.br'
     }
