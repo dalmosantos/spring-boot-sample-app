@@ -112,6 +112,20 @@ def integrationtest() {
                 cucumber buildStatus: null, fileIncludePattern: '**/cucumber.json', jsonReportDirectory: 'target', sortingMethod: 'ALPHABETICAL'
         }
 }
+
+def getDevVersion() {
+    def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+    def versionNumber;
+    if (gitCommit == null) {
+        versionNumber = env.BUILD_NUMBER;
+    } else {
+        versionNumber = gitCommit.take(8);
+    }
+    print 'build  versions...'
+    print versionNumber
+    return versionNumber
+}
+
 def warnings(){
   stage ('Warnings')
     warnings canComputeNew: false, canResolveRelativePaths: false, categoriesPattern: '', consoleParsers: [[parserName: 'Java Compiler (javac)'], [parserName: 'JavaDoc Tool'], [parserName: 'Maven']], defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '', unHealthy: ''
