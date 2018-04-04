@@ -12,7 +12,7 @@ node {
            build()
            integrationtest()
            warnings()
-           archive()
+           //archive()
            clean()
         }
 }
