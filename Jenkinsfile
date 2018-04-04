@@ -60,7 +60,7 @@ def sonarqube () {
                 }
             }
         }    
-
+}
 def build () {
     stage('Build with unit testing') {
             steps {
@@ -115,7 +115,7 @@ def integrationtest() {
                 cucumber buildStatus: null, fileIncludePattern: '**/cucumber.json', jsonReportDirectory: 'target', sortingMethod: 'ALPHABETICAL'
             }
         }
-
+}
 def warnings(){
   stage ('Warnings')
     warnings canComputeNew: false, canResolveRelativePaths: false, categoriesPattern: '', consoleParsers: [[parserName: 'Java Compiler (javac)'], [parserName: 'JavaDoc Tool'], [parserName: 'Maven']], defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '', unHealthy: ''
