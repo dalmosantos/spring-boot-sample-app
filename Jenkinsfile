@@ -63,7 +63,6 @@ def sonarqube () {
 }
 def build () {
     stage('Build with unit testing') {
-            steps {
                 // Run the maven build
                 script {
                     // Get the Maven tool.
@@ -92,7 +91,6 @@ def build () {
                     }
                 }
 
-            }
         }
  
 }
