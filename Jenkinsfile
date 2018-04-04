@@ -100,7 +100,6 @@ def build () {
 def integrationtest() {
         stage('Integration tests') {
             // Run integration test
-            steps {
                 script {
                     def mvnHome = tool '3.5.2'
                     if (isUnix()) {
@@ -113,7 +112,6 @@ def integrationtest() {
                 }
                 // cucumber reports collection
                 cucumber buildStatus: null, fileIncludePattern: '**/cucumber.json', jsonReportDirectory: 'target', sortingMethod: 'ALPHABETICAL'
-            }
         }
 }
 def warnings(){
