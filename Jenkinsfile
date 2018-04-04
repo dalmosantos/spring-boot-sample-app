@@ -26,7 +26,7 @@ def checkout () {
 
 def branchvalidate(){
     sh "echo ${env.BRANCH_NAME}"
-        if (env.BRANCH_NAME == 'master'){
+        if (env.BRANCH_NAME == 'develop'){
            sonarqube()
         }else{
           println env.BRANCH_NAME
