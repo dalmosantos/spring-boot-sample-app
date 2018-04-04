@@ -117,7 +117,7 @@ def integrationtest() {
                     if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
                         timeout(time: 1, unit: 'MINUTES') {
                             script {
-                                def mvnHome = tool 'Maven 3.5.2'
+                                def mvnHome = tool '3.5.2'
                                 //NOTE : if u change the sanity test class name , change it here as well
                                 sh "'${mvnHome}/bin/mvn' -Dtest=ApplicationSanityCheck_ITT surefire:test"
                             }
