@@ -111,7 +111,6 @@ def integrationtest() {
                 }
         }
 	    stage('DEV sanity check') {
-            steps {
                 // give some time till the deployment is done, so we wait 45 seconds
                 sleep(45)
                 script {
@@ -126,7 +125,6 @@ def integrationtest() {
                         }
                     }
                 }
-            }
         }
 }
 
