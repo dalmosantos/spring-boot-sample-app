@@ -11,6 +11,7 @@ node {
            branchvalidate()
            build()
            integrationtest()
+		   deploydev()
            warnings()
            //archive()
            clean()
@@ -108,8 +109,24 @@ def integrationtest() {
                     }
 
                 }
-                // cucumber reports collection
-                //cucumber buildStatus: null, fileIncludePattern: '**/cucumber.json', jsonReportDirectory: 'target', sortingMethod: 'ALPHABETICAL'
+        }
+	    stage('DEV sanity check') {
+            steps {
+                // give some time till the deployment is done, so we wait 45 seconds
+                sleep(45)
+                script {
+                    if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
+                        timeout(time: 1, unit: 'MINUTES') {
+                            script {
+                                def mvnHome = tool 'Maven 3.5.2'
+                                //NOTE : if u change the sanity test class name , change it here as well
+                                sh "'${mvnHome}/bin/mvn' -Dtest=ApplicationSanityCheck_ITT surefire:test"
+                            }
+
+                        }
+                    }
+                }
+            }
         }
 }
 
@@ -125,6 +142,7 @@ def getDevVersion() {
     print versionNumber
     return versionNumber
 }
+
 
 def warnings(){
   stage ('Warnings')
