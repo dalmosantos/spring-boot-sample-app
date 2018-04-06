@@ -5,19 +5,29 @@ import groovy.json.JsonSlurperClassic
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
 import java.net.URL
-node {
-      wrap([$class: 'TimestamperBuildWrapper']) {
-           checkout()
-           branchvalidate()
-           build()
-           integrationtest()
-		   deploydev()
-           warnings()
-           //archive()
-           clean()
-        }
-}
+import java.text.SimpleDateFormat
 
+office365ConnectorSend 'https://outlook.office.com/webhook/06ef8305-ea04-466d-b6d3-85ea7529e409@df45f7f9-d3a1-4f0a-a03b-ecfe8093cbb4/JenkinsCI/8dd3641aae524825bc3e2dc68c362a5a/db7d02f4-87f8-4547-9d08-2adbc8afa860'
+properties([[$class: 'BuildDiscarderProperty',
+                strategy: [$class: 'LogRotator', numToKeepStr: '10']],
+                pipelineTriggers([[$class:"SCMTrigger", scmpoll_spec:"H/5 * * * *"]]),
+])
+node {
+        ansiColor('xterm') {
+           wrap([$class: 'TimestamperBuildWrapper']) {
+                checkout()
+                branchvalidate()
+                build()
+                //integrationtest()
+	      	   container()
+                warnings()
+                archive()
+                //clean()
+            }
+
+		}
+    }
+   
 def checkout () {   
     step([$class: 'WsCleanup'])         
 	stage ('Checkout')
@@ -36,19 +46,16 @@ def branchvalidate(){
 def sonarqube () {
         stage('Sonar scan execution') {
             // Run the sonar scan
-            steps {
                 script {
                     def mvnHome = tool '3.5.2'
                     withSonarQubeEnv {
                      
                         sh "'${mvnHome}/bin/mvn'  verify sonar:sonar -Dintegration-tests.skip=true -Dmaven.test.failure.ignore=true"
                     }
-                }
             }
         }
         // waiting for sonar results based into the configured web hook in Sonar server which push the status back to jenkins
         stage('Sonar scan result check') {
-            steps {
                 timeout(time: 2, unit: 'MINUTES') {
                     retry(3) {
                         script {
@@ -59,7 +66,6 @@ def sonarqube () {
                         }
                     }
                 }
-            }
         }    
 }
 def build () {
@@ -166,6 +172,23 @@ def getReleaseVersion() {
         versionNumber = gitCommit.take(8);
     }
     return pom.version.replace("-SNAPSHOT", ".${versionNumber}")
+}
+
+def container (){
+    def customImage
+    stage('Build image') {
+	withDockerRegistry([credentialsId: 'nexus', url: 'http://nexus.verity.local:18443']) {
+	  customImage = docker.build("nexus.verity.local:18440/pause-web:${env.BUILD_ID}-${env.BUILD_TIMESTAMP}")
+    }
+   }	
+    stage('Push image') {
+       customImage.push()
+       customImage.push('latest')
+    }
+    stage('Deploy image') {
+       rancher confirm: true, credentialId: 'rancher-server', endpoint: 'http://192.168.3.22:8080/v2-beta', environmentId: '1a5', environments: '', image: 'nexus.verity.local:18443/pause-web:latest', ports: '9001', service: 'pause/pause-web', timeout: 50
+    }
+	
 }
 
 def warnings(){

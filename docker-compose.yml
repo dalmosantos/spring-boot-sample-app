@@ -1,0 +1,13 @@
+version: '3'
+services:
+ pauseweb:
+  restart: always
+  container_name: pause-web
+  image: veritydockerregistry.azurecr.io/verity/pause-web:latest
+  build:
+   context: .
+   dockerfile: DockerFile
+  expose:
+   - 8080
+  ports:
+   - "8080:8080"
